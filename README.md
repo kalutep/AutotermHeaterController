@@ -10,7 +10,7 @@ It is also possible to connect the heater to the computer either using original 
 I bought two FT232 mini-USB to UART boards with selectable 5V or 3.3V interface level (like [this](https://www.aliexpress.com/item/32896631192.html?spm=a2g0o.12057483.product-detail-btn.1.d5643b97Qj3SNY)) and connected them to the Raspberry Pi with USB cables. I used jump wires to connect to the heater and the controller. First, I connected the heater (Rx, Tx, GND) and the Planar controller (Rx, Tx, GND). After some initial problems I created a simple serial passthrough program in Python (in my case the only usable bitrate was 2400). You can find the program in utils/serial_passthrough.py. Then I could connect the red wires from the heater and the controller (be careful, the red wire is +12 V and can destroy your Raspberry). The controller has turned on and initiated communication. On the Raspberry I was able to catch and read messages. With this simple program I was able to determine message structure. 
 Message structure:
 * byte 0: preamble (always 0xaa)
-* byte 1: device (0x03 for messages from heater, 0x04 from the controller, 0x02 for some diagnostic messages)
+* byte 1: device (0x03 for messages from controller, 0x04 from the heater, 0x02 for some diagnostic messages)
 * byte 2: payload length (uint8_t)
 * byte 3: message ID1 (so far always 0x00)
 * byte 4: message ID2

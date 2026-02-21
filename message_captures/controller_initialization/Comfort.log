@@ -1,0 +1,22 @@
+Comfort Control
+
+C >> H [9600]: aa 03 00 00 06 5e bc
+ - 2.5s delay
+C >> H [2400]: aa 03 00 00 06 5e bc
+ - 1.5s delay
+C >> H [2400]: 07 07 #???
+ - 2.5s delay
+C >> H [9600]: aa 03 00 00 06 5e bc
+ - 2.5s delay
+C >> H [2400]: aa 03 00 00 06 5e bc
+ - 1.5s delay
+C >> H [2400]: 07 07 #???
+ - 2.5s delay
+# "No connection!" displays
+C >> H [9600]: aa 03 00 00 06 5e bc
+ - 2.5s delay
+C >> H [2400]: aa 03 00 00 06 5e bc
+ - 1.5s delay
+C >> H [2400]: 07 07 #???
+ - 2.5s delay
+...

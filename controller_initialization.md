@@ -17,7 +17,7 @@ The Comfort Control unit utilizes a "hunt-and-peck" strategy, infinitely cycling
 ### Initialization Cycle
 * **Strategy:** Infinite Loop, the controller continuously toggles between the two supported baud rates. It displays "No connection!" on the screen while continuing to loop indefinitely.
 * **Cycle Length:** Approximately 6.5 seconds per complete cycle.
-* **Target Message ID:** It strictly uses message ID `0x06` across all attempts.
+* **Target Command IDs:** It strictly uses command ID `0x06` across all attempts.
 
 ### Sequence Steps
 The controller continuously alternates between the following three states:
@@ -30,7 +30,7 @@ The controller continuously alternates between the following three states:
 
 ## 2. OLED Control panel (PU-27)
 
-The OLED Control panel employs a deterministic, multi-stage initialization sweep. It broadcasts a burst of 15 identical messages at a specific baud rate and Message ID before moving to the next configuration.
+The OLED Control panel employs a deterministic, multi-stage initialization sweep. It broadcasts a burst of 15 identical messages at a specific baud rate and Command ID before moving to the next configuration.
 
 ### Supported Baud Rates
 * **1200 bps**
@@ -40,7 +40,7 @@ The OLED Control panel employs a deterministic, multi-stage initialization sweep
 ### Initialization Cycle
 * **Strategy:** Finite Sequential Sweep. The controller executes a 4-stage sequence once. If no connection is established after the final stage, the transmission sequence terminates.
 * **Cycle Length:** The complete initialization sweep takes approximately 60 seconds.
-* **Target Message IDs:** The message ID changes depending on the current stage, utilizing `0x1C`, `0x1E`, and `0x04`.
+* **Target Command IDs:** The Command ID changes depending on the current stage, utilizing `0x1C`, `0x1E`, and `0x04`.
 
 ### Sequence Steps
 The controller executes the following five stages sequentially:

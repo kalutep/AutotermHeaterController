@@ -73,7 +73,7 @@ The total length of a frame is **N + 7 bytes**, where N is the Payload Length.
 ### Byte 5 ... N: Payload
 * **Description:** The data arguments for the command.
 * **Length:** Variable (defined by Byte 2)
-* *Note:* See the "Message IDs & Command Reference" section for specific byte maps per Command ID.
+* *Note:* See the "Command IDs & Command Reference" section for specific byte maps per Command ID.
 
 ### Byte N+1, N+2: Checksum (CRC-16)
 * **Algorithm:** CRC-16 Modbus
@@ -87,7 +87,7 @@ The total length of a frame is **N + 7 bytes**, where N is the Payload Length.
     * **Reflect Output:** True
 * **Calculation Scope:** The CRC is calculated over **all** preceding bytes in the frame (from `0xAA` at Byte 0 up to the last byte of the Payload).
 
-## 4. Message IDs & Command Reference
+## 4. Command IDs & Command Reference
 
 The **Command ID** (Byte 4) determines the function of the packet.
 ### Quick Reference

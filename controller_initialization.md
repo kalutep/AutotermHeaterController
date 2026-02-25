@@ -46,7 +46,7 @@ The OLED Control panel employs a deterministic, multi-stage initialization sweep
 The controller executes the following five stages sequentially:
 * **Stage 0 (2400 Baud):** Transmits 6 messages of `1b 1b`. 
   * *Note:* The exact meaning of these messages is currently unknown.
-* **Stage 1 (2400 Baud):** Transmits 15 messages `aa 03 00 00 1c 95 3d` (Message ID: `0x1C`).
-* **Stage 2 (1200 Baud):** Transmits 15 messages `aa 03 00 00 1e 54 bc` (Message ID: `0x1E`).
-* **Stage 3 (2400 Baud):** Transmits 15 messages `aa 03 00 00 04 9f 3d` (Message ID: `0x04`).
-* **Stage 4 (9600 Baud):** Transmits 15 messages `aa 03 00 00 04 9f 3d` (Message ID: `0x04`).
+* **Stage 1 (2400 Baud):** Transmits 15 messages `aa 03 00 00 1c 95 3d` (Command ID: `0x1C`).
+* **Stage 2 (1200 Baud):** Transmits 15 messages `aa 03 00 00 1e 54 bc` (Command ID: `0x1E`).
+* **Stage 3 (2400 Baud):** Transmits 15 messages `aa 03 00 00 04 9f 3d` (Command ID: `0x04`).
+* **Stage 4 (9600 Baud):** Transmits 15 messages `aa 03 00 00 04 9f 3d` (Command ID: `0x04`).

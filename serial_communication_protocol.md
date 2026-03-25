@@ -6,7 +6,7 @@ The physical connection between the Control Panel and the Heater Unit is a stand
 
 * **Interface:** UART (Universal Asynchronous Receiver-Transmitter)
 * **Voltage Level:** 5V TTL (Logic High = 5V, Logic Low = 0V)
-  * *Note:* A Logic Level Shifter is required when connecting to 3.3V microcontrollers (ESP32, Raspberry Pi).
+  * *Note: A Logic Level Shifter is required when connecting to 3.3V microcontrollers (ESP32, Raspberry Pi).*
 * **Baud Rate:** Fixed by the Heater Unit (communicates on only one specific baud rate).
   * **1200 baud**
   * **2400 baud**
@@ -40,7 +40,7 @@ The total length of a frame is **N + 7 bytes**, where N is the Payload Length.
 * **Description:** The synchronization byte that marks the beginning of every frame.
 * **Value:** `0xAA` (Fixed)
 * **Function:** It is used by the receiver (Heater or Controller) to detect the start of a valid data packet in the serial stream.
-* *Note:* Receivers should flush their buffer and wait for `0xAA` if a CRC error or timeout occurs.
+* *Note: Receivers should flush their buffer and wait for `0xAA` if a CRC error or timeout occurs.*
 
 ### Byte 1: Device Identifier
 * **Description:** Identifies the type of device that *originated* the message.
@@ -70,12 +70,12 @@ The total length of a frame is **N + 7 bytes**, where N is the Payload Length.
     * `0x03`: **Stop** – Initiates shutdown and purge sequence.
     * `0x0F`: **Status** – Standard query for sensor data.
     * `0x11`: **Controller Temp** – Exchanges ambient temperature measured by the Controller.
-        * *Note:* For other values see Section 4
+        * *Note: For other values see Section 4*
 
 ### Byte 5 ... N: Payload
 * **Description:** The data arguments for the command.
 * **Length:** Variable (defined by Byte 2)
-* *Note:* See the "Command IDs & Command Reference" section for specific byte maps per Command ID.
+* *Note: See the "Command IDs & Command Reference" section for specific byte maps per Command ID.*
 
 ### Byte N+1, N+2: Checksum (CRC-16)
 * **Algorithm:** CRC-16 Modbus
@@ -119,9 +119,8 @@ Triggers the heater ignition sequence using the provided configuration parameter
 
 * **Direction:** Controller → Heater
 * **Length:** 6 Bytes (Optionally 2 Bytes)
-* **Packet Map:** `[T-Lim] [Time] [Mode] [Temp] [Wait] [Level]`
-    * **T-Lim (Byte 0):** Time Limit Flag (`0`=Enabled, `1`=Unlimited)
-    * **Time (Byte 1):** Work Time in Minutes (e.g., `0x78` = 120 Minutes)
+* **Packet Map:** `[Time] [Time] [Mode] [Temp] [Vent] [Level]`
+    * **Time (Byte 0-1):** Work Time in Minutes (e.g., `0x78` = 120 Minutes)
     * **Mode (Byte 2):** Control Strategy
         * `1`: Temperature (Internal Sensor)
         * `2`: Temperature (Controller Sensor – requires 0x11 messages)
@@ -133,20 +132,18 @@ Triggers the heater ignition sequence using the provided configuration parameter
         * `1`: **On** – Heater shuts down combustion at Target + 3°C, runs fan until Target - 3°C, then restarts
     * **Level (Byte 5):** Power Level (`0`-`9`) (Used if Mode = 4)
       * *Note:* If running in Temperature Modes (1, 2, or 3), the heater's internal PID will dynamically overwrite this byte in the 0x02 response payload to indicate the current heating effort it has autonomously selected.
-* **Simple Start Packet Map:** `[T-Lim] [Time]`
-    * **T-Lim (Byte 0):** Time Limit Flag (`0`=Enabled, `1`=Unlimited)
-    * **Time (Byte 1):** Work Time in Minutes (e.g., `0x78` = 120 Minutes)
-    * *Note:* Heater returns the full configuration structure confirming the actual running state.
+* **Simple Start Packet Map:** `[Time] [Time]`
+    * **Time (Byte 0-1):** Work Time in Minutes (e.g., `0x78` = 120 Minutes)
+    * *Note: Heater returns the full configuration structure confirming the actual running state.*
 
 #### **`0x02`** – Settings
 Updates configuration without triggering ignition (if Standby), or updates parameters live (if Running). Also used to read current config.
 
 * **Direction:** Controller ↔ Heater
 * **Length:** 6 Bytes
-* **Packet Map:** `[T-Lim] [Time] [Mode] [Temp] [Wait] [Level]`
-    * *Note:* Identical structure to **Start (Full)**
-    * **T-Lim (Byte 0):** Time Limit Flag (`0` = Enabled, `1` = Unlimited)
-    * **Time (Byte 1):** Work Time in Minutes (e.g., `0x78` = 120 Minutes)
+* **Packet Map:** `[Time] [Time] [Mode] [Temp] [Vent] [Level]`
+    * *Note: Identical structure to **Start (Full)***
+    * **Time (Byte 0-1):** Work Time in Minutes (e.g., `0x78` = 120 Minutes)
     * **Mode (Byte 2):** Control Strategy
         * `1`: Temperature (Internal Sensor)
         * `2`: Temperature (Controller Sensor – requires 0x11 messages)
@@ -157,26 +154,25 @@ Updates configuration without triggering ignition (if Standby), or updates param
         * `0`: **Off** – Heater reduces heating power to minimum, **without** shutting off the combustion process
         * `1`: **On** – Heater shuts down combustion at Target + 3°C, runs fan until Target - 3°C, then restarts
     * **Level (Byte 5):** Power Level (`0`-`9`) (Used if Mode = 4)
-      * *Note:* If running in Temperature Modes (1, 2, or 3), the heater's internal PID will dynamically overwrite this byte in the 0x02 response payload to indicate the current heating effort it has autonomously selected.
-    * *Note:* When the heater is actively running in Ventilation Mode (State `03.23`), the heater's ECU synchronizes the ventilation parameters into this standard settings payload (T-lim, Time, Level).
+      * *Note: If running in Temperature Modes (1, 2, or 3), the heater's internal PID will dynamically overwrite this byte in the 0x02 response payload to indicate the current heating effort it has autonomously selected.*
+    * *Note: When the heater is actively running in Ventilation Mode (State `03.23`), the heater's ECU synchronizes the ventilation parameters into this standard settings payload (Time, Level).*
 
 #### **`0x03`** – Stop
 Initiates the shutdown sequence. The heater will stop fuel metering, burn off remaining fuel, and purge the chamber (fan runs high).
 * **Direction:** Controller → Heater
 * **Length:** 0 Bytes
-* *Note:* Controller repeatedly pulses this command every 20 seconds until the heater safely reaches the Standby state.
+* *Note: Controller repeatedly pulses this command every 20 seconds until the heater safely reaches the Standby state.*
 
 #### **`0x23`** – Ventilation
 Activates "Fan Only" mode. Also used by the controller to update the fan level on the fly while ventilation is active.
 
 * **Direction:** Controller → Heater
 * **Length:** 4 Bytes
-* **Packet Map:** `[T-Lim] [Time] [Level] [Unknown]`
-    * **T-Lim (Byte 0):** Time Limit Flag (`0`=Enabled, `1`=Unlimited) **!NOT VERIFIED!**
-    * **Time (Byte 1):** Work Time in Minutes (e.g., `0x78` = 120 Minutes) **!NOT VERIFIED!**
+* **Packet Map:** `[Time] [Time] [Level] [Unknown]`
+    * **Time (Byte 0-1):** Work Time in Minutes (e.g., `0x78` = 120 Minutes) **!NOT VERIFIED!**
     * **Level (Byte 2):** Fan Speed Level (`0`-`9`)
     * **Fan-Actual (Byte 3):** Indicates the current fan speed, sent as `0x00` by the controller
-* *Note:* The heater synchronizes Ventilation mode with the standard Settings memory. When `0x23` is active, you can simply poll the standard `0x02` Settings command to read the active Ventilation Timer (Bytes 0-1) and Target Fan Level (Byte 5)
+* *Note: The heater synchronizes Ventilation mode with the standard Settings memory. When `0x23` is active, you can simply poll the standard `0x02` Settings command to read the active Ventilation Timer (Bytes 0-1) and Target Fan Level (Byte 5)*
 
 ---
 
@@ -204,7 +200,7 @@ The primary poll command. Controller asks for status, Heater replies with sensor
 | **14** | **Fuel Pump** | `uint8` | Pump Frequency (Hz * 10). |
 | **18** | **Water Pump** | `uint8` | **Liquid Only:** `0`=Off, `1`=On.<br>*(Unused on Air Heaters)*. |
 
-*Note:* Some heater models or firmware versions may return a truncated **10-Byte Payload**. This contains the first 10 bytes of the standard structure below (Offsets 0–9).
+*Note: Some heater models or firmware versions may return a truncated **10-Byte Payload**. This contains the first 10 bytes of the standard structure below (Offsets 0–9).*
 
 #### **`0x11`** – Controller Temp
 Is used to broadcast the ambient temperature measured by the external control panel's sensor to the heater. This allows the heater to regulate its output based on the cabin temperature.
@@ -372,14 +368,14 @@ These codes appear in **Byte 2** of the Status Response (`0x0F`) when a fault oc
 ### 7.1. Temperature Encoding
 * **Type A (Internal, External, Controller Sensors):** 8-bit Signed Integer (`int8`).
     * `Range: -128°C to +127°C`
-    * *Note:* A value of `127` (`0x7F`) indicates that the sensor is disconnected.
+    * *Note: A value of `127` (`0x7F`) indicates that the sensor is disconnected.*
 * **Type B (Flame Sensor):** 16-bit Unsigned Integer (**Big Endian**) in **Kelvin**.
     * `Temp (°C) = ((Byte7 << 8) | Byte8) -273.15`
 
 ### 7.2. Voltage Encoding
 Voltage is a 16-bit Big Endian integer spanning **Byte 5 and Byte 6**.
 * **Formula:** `Voltage = ((Byte5 << 8) | Byte6) / 10.0`
-* *Note:* Byte 5 is non-zero for 24V systems (Values > 25.5V).
+* *Note: Byte 5 is non-zero for 24V systems (Values > 25.5V).*
 
 ### 7.3. Fan RPM
 Fan speed is transmitted as Frequency (Hz).
